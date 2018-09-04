@@ -1,4 +1,4 @@
-#VWAVES-GaiaDR2
+# VWAVES-GaiaDR2
 
 ## Overview
 
@@ -11,7 +11,11 @@ Morgan Bennett - bennett at astro dot utoronto dot ca
 
 ### 1. [py/NumberCount.ipynb](py/NumberCount.ipynb)
 
+Calculates the number count asymmetry in the solar neighbourhood. The code starts by fitting a two component model to the number counts for different absolute magnitude-colour bins to recover the sun's vertical position, zsun. We then use this measurement to adjust the number counts and calculate the vertical asymmetry in the number counts about the Galactic mid-plane. Finally, we use an estimate of the number count asymmetry to refit the number counts to a new model which accounts for the perturbation.
+
 ### 2. [py/VerticalVelocities.ipynb](py/VerticalVelocities.ipynb)
+
+
 
 ### 3. [py/CompletenessChecks.ipynb](py/CompletenessChecks.ipynb)
 
