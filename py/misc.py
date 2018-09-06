@@ -1,4 +1,10 @@
 import numpy as np
+from scipy.optimize import minimize
+import emcee
+import corner
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+from numpy import random
 
 class ncount():
     
@@ -7,7 +13,6 @@ class ncount():
     
     def __init__(self,data,magnitude,bprp,a=0.025,guess=[1.,0.03,0.1,0.1,0.5],mcmc=False):
         
-        import numpy
         #Unpack the input parameters
         self.x,self.y,self.z= data.T
         self.Mg= magnitude
@@ -18,12 +23,12 @@ class ncount():
         
         #Calculate some important parameters
         self.lim= self.calc_lim() 
-        if isnan(self.lim[1]):
+        if np.isnan(self.lim[1]):
             print('The colour cut ',self.br,' is not complete!')
             raise Exception()
-        self.area= pi*0.025**2*self.binw
-        self.r= [-round(self.lim[1],2),round(self.lim[1],2)]
-        self.b= linspace(self.r[0],self.r[1],int(round((self.r[1]-self.r[0])/self.binw)))
+        self.area= np.pi*0.025**2*self.binw
+        self.r= [-np.round(self.lim[1],2),np.round(self.lim[1],2)]
+        self.b= np.linspace(self.r[0],self.r[1],int(np.round((self.r[1]-self.r[0])/self.binw)))
         
         #Calculate the number count density with and without cuts based on magnitude
         self.zbin_uncut, self.N_uncut= self.calc_count()
@@ -31,10 +36,10 @@ class ncount():
         self.N= self.N_uncut[abs(self.zbin_uncut)>self.lim[0]]
 
         #Update guess
-        self.g[0]= log10(self.g[0]*np.max(self.N))
+        self.g[0]= np.log10(self.g[0]*np.max(self.N))
         
         #Calculate the best fit to the number counts
-        self.zmodel= linspace(-self.lim[1],self.lim[1],1000)
+        self.zmodel= np.linspace(-self.lim[1],self.lim[1],1000)
         self.psech= self.calc_sechfit()
         self.n0,self.zsun,self.H1,self.f,self.H2= self.psech
         self.n0= 10.**self.n0
@@ -43,9 +48,9 @@ class ncount():
         if mcmc:
             self.sample= self.calc_mcmc()
             self.n0_mcmc, self.z0_mcmc, self.h1_mcmc, self.f_mcmc, self.h2_mcmc= self.calc_psech_mcmc()
-            self.psech_mcmc= [log10(self.n0_mcmc[0]),self.z0_mcmc[0],self.h1_mcmc[0],self.f_mcmc[0],self.h2_mcmc[0]]
-            self.print_mcmc_bestfit()
-            self.plot_corner()
+            self.psech_mcmc= [np.log10(self.n0_mcmc[0]),self.z0_mcmc[0],self.h1_mcmc[0],self.f_mcmc[0],self.h2_mcmc[0]]
+            #self.print_mcmc_bestfit()
+            #self.plot_corner()
         
         #Calculate the asymmetry parameter
         self.zA,self.A,self.A_err= self.calc_A()
@@ -78,9 +83,9 @@ class ncount():
                           self.h2_mcmc[2]))
         
     def calc_lim(self):
-        mg= numpy.array([[7.],[17.]])
+        mg= np.array([[7.],[17.]])
         d= 10.**((mg-self.Mg)/5.-2.)
-        return max(d[0]),min([sqrt(min(d[1])**2-0.25**2),2.08])   
+        return np.max(d[0]),np.min([np.sqrt(np.min(d[1])**2-0.25**2),2.08])   
         
     def print_lim(self):
         print("""For a colour bin of {0:.1f} to {1:.1f}
@@ -91,9 +96,8 @@ class ncount():
                   self.lim[1]))
     
     def calc_count(self):
-        Ncount, edges= histogram(self.z,bins=self.b)
+        Ncount, edges= np.histogram(self.z,bins=self.b)
         mid= np.diff(edges)/2.+edges[:-1]
-        Ncount= Ncount
         
         return mid[(mid!=0)*(Ncount!=0)], Ncount[(mid!=0)*(Ncount!=0)]
     
@@ -101,25 +105,25 @@ class ncount():
         N,z= data
         model= self.n_model(params,z)
         if (params[4]>5. or params[4]<0):
-            return inf
+            return np.inf
         if (params[3]>10. or params[3]<0.):
-            return inf
+            return np.inf
         if (params[2]<0. or params[2]>5.):
-            return inf
+            return np.inf
         if (params[1]<-0.1 or params[1]>0.1):
-            return inf
-        loglike= -model+N*log(model)
-        return -sum(loglike)
+            return np.inf
+        loglike= -model+N*np.log(model)
+        return -np.sum(loglike)
         
     def n_model(self,params,zdata):
         ln_n0,zsun,H1,f,H2 = params
         n0= 10.**(ln_n0)
-        return n0*(1./cosh((zdata+zsun)/(2.*H1))**2+f*1./cosh((zdata+zsun)/(2.*H2))**2)
+        return n0*(1./np.cosh((zdata+zsun)/(2.*H1))**2+f*1./np.cosh((zdata+zsun)/(2.*H2))**2)
     
     def n_model_simple(self,params,zdata):
         ln_n0,zsun,H1 = params
         n0= 10.**(ln_n0)
-        return n0*(1./cosh((zdata+zsun)/(2.*H1))**2)
+        return n0*(1./np.cosh((zdata+zsun)/(2.*H1))**2)
 
     def calc_sechfit(self):
         fit= minimize(lambda x: self.nloglikelihood(x,[self.N,self.zbin]),self.g)
@@ -143,21 +147,21 @@ class ncount():
                                                                             axis=0)))
         return n0_mcmc, z0_mcmc, h1_mcmc, f_mcmc, h2_mcmc
     
-    def calc_A(self,z0='nan'):
-        if isnan(z0):
+    def calc_A(self,z0=np.nan):
+        if np.isnan(z0):
             z0=self.zsun
         zpos= self.z+z0
-        count,edges= histogram(zpos,bins=self.b)
+        count,edges= np.histogram(zpos,bins=self.b)
         mbin= np.diff(edges)/2.+edges[:-1]
         count= count[(abs(mbin)>self.lim[0])]/self.area
         Asym= (count-count[::-1])/(count+count[::-1])
         mbin= mbin[(abs(mbin)>self.lim[0])]
-        Asym_err= sqrt(2.*self.N*self.N[::-1]/(self.N+self.N[::-1])**3)
+        Asym_err= np.sqrt(2.*self.N*self.N[::-1]/(self.N+self.N[::-1])**3)
         return mbin[mbin>0.], Asym[mbin>0.], Asym_err[mbin>0.]
     
     def shift_N(self,z0):
         zpos= self.z+z0
-        count,edges= histogram(zpos,bins=self.b)
+        count,edges= np.histogram(zpos,bins=self.b)
         mbin= np.diff(edges)/2.+edges[:-1]
         return count,mbin
         
@@ -195,7 +199,7 @@ class ncount():
         fig1= figure()
         frame1= fig1.add_axes((.1,.5,.8,.5))
         plt.yscale('symlog')
-        errorbar(self.zbin,self.N,yerr=sqrt(self.N),fmt='o',label='data')
+        errorbar(self.zbin,self.N,yerr=np.sqrt(self.N),fmt='o',label='data')
         if self.mcmc:
             plot(self.zmodel,self.n_model(self.psech_mcmc,self.zmodel),'k',label='best fit')
         else:
@@ -226,15 +230,7 @@ class ncount():
 def bootstrap(x,n_resamp):
     i= random.randint(0,len(x)-1,(n_resamp,len(x)))
     x_boot= x[i]
-    m_boot= nanmedian(x_boot,axis=1)
-    m= mean(m_boot)
-    sigma= std(m_boot)
-    return m,sigma    
-
-def bootstrap_mean(x,n_resamp):
-    i= random.randint(0,len(x)-1,(n_resamp,len(x)))
-    x_boot= x[i]
-    m_boot= mean(x_boot,axis=1)
-    m= mean(m_boot)
-    sigma= std(m_boot)
+    m_boot= np.nanmedian(x_boot,axis=1)
+    m= np.mean(m_boot)
+    sigma= np.std(m_boot)
     return m,sigma
