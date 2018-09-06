@@ -1,4 +1,4 @@
-import numpy as np
+import numpy
 
 class ncount():
     
@@ -7,7 +7,6 @@ class ncount():
     
     def __init__(self,data,magnitude,bprp,a=0.025,guess=[1.,0.03,0.1,0.1,0.5],mcmc=False):
         
-        import numpy
         #Unpack the input parameters
         self.x,self.y,self.z= data.T
         self.Mg= magnitude
@@ -78,7 +77,7 @@ class ncount():
                           self.h2_mcmc[2]))
         
     def calc_lim(self):
-        mg= numpy.array([[7.],[17.]])
+        mg= array([[7.],[17.]])
         d= 10.**((mg-self.Mg)/5.-2.)
         return max(d[0]),min([sqrt(min(d[1])**2-0.25**2),2.08])   
         

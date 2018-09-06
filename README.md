@@ -15,8 +15,14 @@ Calculates the number count asymmetry in the solar neighbourhood. The code start
 
 ### 2. [py/VerticalVelocities.ipynb](py/VerticalVelocities.ipynb)
 
-
+Examines the mean vertical velocities above and below the galactic mid-plane in APOGEE, GALAH and the Gaia RV sample. We calculate the rolling median for all three samples due to the small number of stars in the first two. For the Gaia RV sample, we also examine the mean vertical velocities binned by vertical height to take advantage of the larger number of points. Also examines the position in absolute magnitude-colour space to compare to the number counts samples.
 
 ### 3. [py/CompletenessChecks.ipynb](py/CompletenessChecks.ipynb)
+
+Throughout our analysis, we make certain assumptions about the completeness of the sample and the quality. This notebook examines some of these assumptions in greater detail.
+
+### 4. [py/Summary.ipynb](py/Summary.ipynb)
+
+Uses the asymmetry data saved from [py/NumberCount.ipynb](py/NumberCount.ipynb) and the Gaia RV binned median vertical velocities from  [py/VerticalVelocities.ipynb](py/VerticalVelocities.ipynb) to create a summary plot of the analysis.
 
 ## Publications
