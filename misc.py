@@ -114,11 +114,6 @@ class ncount():
         ln_n0,zsun,H1,f,H2 = params
         n0= 10.**(ln_n0)
         return n0*(1./cosh((zdata+zsun)/(2.*H1))**2+f*1./cosh((zdata+zsun)/(2.*H2))**2)
-    
-    def n_model_simple(self,params,zdata):
-        ln_n0,zsun,H1 = params
-        n0= 10.**(ln_n0)
-        return n0*(1./cosh((zdata+zsun)/(2.*H1))**2)
 
     def calc_sechfit(self):
         fit= minimize(lambda x: self.nloglikelihood(x,[self.N,self.zbin]),self.g)
@@ -142,7 +137,7 @@ class ncount():
                                                                             axis=0)))
         return n0_mcmc, z0_mcmc, h1_mcmc, f_mcmc, h2_mcmc
     
-    def calc_A(self,z0='nan'):
+    def calc_A(self,z0=np.nan):
         if isnan(z0):
             z0=self.zsun
         zpos= self.z+z0
@@ -177,16 +172,7 @@ class ncount():
         ax3.axhline(self.lim[0],c='k',ls='--',lw=0.8)
         ax3.axhline(-self.lim[1],c='k',ls='--',lw=0.8)
         ax3.axhline(self.lim[1],c='k',ls='--',lw=0.8)
-        
-    def plot_ncount_uncut(self):
-        figsize(12,6)
-        figure()
-        plt.yscale('symlog')
-        step(self.zbin_uncut,self.N_uncut,where='mid')
-        axvline(-self.lim[0],c='k',ls='--',lw=0.8); axvline(self.lim[0],c='k',ls='--',lw=0.8)
-        axvline(-self.lim[1],c='k',ls='--',lw=0.8); axvline(self.lim[1],c='k',ls='--',lw=0.8)
-        ylabel('N')
-        xlabel('z (kpc)')
+
   
     def plot_sechfit(self):
         figsize(10,10)
@@ -211,8 +197,6 @@ class ncount():
         xlabel(r'z (kpc)')
         
     def plot_A(self,single=False,style='points'):
-        if single:
-            figure()
         plotname= str(round(self.Mg[0],1))+' to '+str(round(self.Mg[1],1))
         if style=='lines':
             plot(self.zA,self.A,'-',label=plotname,zorder=-32)
