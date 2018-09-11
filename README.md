@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository includes all the code required to reproduce the results in Bennett & Bovy (2018, in prep.) which studies the vertical waves in the solar neighbourhood using Gaia DR2. We use the number counts and mean vertical velocity to examine perturbations to the vertical structure of the disk in the solar neighbourhood. We also consider an example where considering the asymmetry affects our measurement of the disk properties. In particular, we obtain a value of zsun = 20.8 +/- 0.3 pc. 
+This repository includes all the code required to reproduce the results in Bennett & Bovy (2018, in prep.) which studies the vertical waves in the solar neighbourhood using Gaia DR2. We use the number counts and mean vertical velocity to examine perturbations to the vertical structure of the disk in the solar neighbourhood. We also consider an example where considering the asymmetry affects our measurement of the disk properties. In particular, we obtain a value of zsun = 20.8 +/- 0.3 pc.
 
 ## AUTHOR
 Morgan Bennett - bennett at astro dot utoronto dot ca
@@ -24,5 +24,13 @@ Throughout our analysis, we make certain assumptions about the completeness of t
 ### 4. [py/Summary.ipynb](py/Summary.ipynb)
 
 Uses the asymmetry data saved from [py/NumberCount.ipynb](py/NumberCount.ipynb) and the Gaia RV binned median vertical velocities from  [py/VerticalVelocities.ipynb](py/VerticalVelocities.ipynb) to create a summary plot of the analysis.
+
+### 5. [py/Asym_bin.txt](py/Asym_bin.txt)
+
+File includes the z coordinate corresponding to the midpoint of the bins in height, the number count asymmetry at those values as well as the error. The data is generated in [py/NumberCount.ipynb](py/NumberCount.ipynb).
+
+### 6. [py/bin_vel.txt](py/bin_vel.txt)
+
+Contains the midpoints of the bins in z, the binned values for the median vertical velocity as well as the error. The data is generated in [py/VerticalVelocities.ipynb](py/VerticalVelocities.ipynb).
 
 ## Publications
